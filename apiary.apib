@@ -1,0 +1,122 @@
+FORMAT: 1A
+HOST: http://api.glodon.com/rss
+
+# Raw Storage Service
+
+提供简单的API存储
+objectKey需要用URLEncoder编码
+
+## 轻量级上传下载 [/objects/{objectKey}]
+
+### 根据objectKey下载 [GET]
+请求方需要经过account用户中心OAUTH授权<br>
+使用ResponseBody 文件流stream回传二进制文件数据
+
++ Request
+    + Headers
+    
+            Authorization: Bearer CAah2j384sDjiujOmAN6szh1rppN93
+
++ Response 200
+    + Headers
+        
+            Contenn-Type:application/octet-stream
+
+        
++ Response 401 (application/json)
+    + Body
+    
+            {
+                "code": "401"
+                "message": "permission denied"
+                "data": null
+            }
+        
++ Response 404 (application/json)
+    + Body
+    
+            {
+                "code": "21001"
+                "message": "object not found"
+                "data": null
+            }    
+
+### 上传文档 [PUT]
+请求方需要经过account用户中心OAUTH授权<br>
+将文件二进制流通过httprequest提交<br>
+有则更新 无则创建
+
++ Request
+    + Headers
+    
+            Authorization: Bearer CAah2j384sDjiujOmAN6szh1rppN93
+            Contenn-Type:application/octet-stream
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "code": "0",
+                "message": "success",
+                "data": {
+                    "objectKey" : "/CAah2j384sDjiujOmAN6szh1rppN93/markup/111.png"
+                }
+            }
+
+### 删除文档 [DELETE]
+使用DELETE请求删除指定的objectKey
+
++ Request
+    + Headers
+    
+            Authorization: Bearer CAah2j384sDjiujOmAN6szh1rppN93
+
++ Response 200 (application/json)
+
+            {
+                "code": "0",
+                "message": "success",
+                "data": {
+                    "objectKey" : "/CAah2j384sDjiujOmAN6szh1rppN93/markup/111.png"
+                }
+            }
+
+### 查看object基本信息 [HEAD]
+查看某个objectKey<br>
+普通GET请求
+
++ Request
+    + Headers
+    
+            Authorization: Bearer CAah2j384sDjiujOmAN6szh1rppN93
+            
++ Response 200
+    + Headers
+
+            info: objectKey=/markup/222.png&exists=true
+
+## 轻量级文档操作 - 列表 [/objects?objectKey={objectKey}&start={start}&limit={limit}]
+
+### 查询列表 [GET]
+获取路径下的列表<br>
+默认20个
+
++ Request
+    + Headers
+    
+            Authorization: Bearer CAah2j384sDjiujOmAN6szh1rppN93
+            
++ Response 200 (application/json)
+
+        {
+            "code" : "0",
+            "message" : "success",
+            "data" : [
+                {
+                    "objectKey" : "/xxxx.jpg"
+                },
+                {
+                    "objectKey" : "/xxxx.png"
+                }
+            ]
+        }
