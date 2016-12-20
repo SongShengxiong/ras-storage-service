@@ -3,14 +3,24 @@ HOST: http://api.glodon.com/rss
 
 # Raw Storage Service
 
-提供简单的API存储
-objectKey需要用URLEncoder编码
+提供简单的API存储<br>
+objectKey需要用URLEncoder编码<br>
+错误码<br>
+    SUCCESS("0", "success"),<br>
+    OBJECTKEY_NOT_FOUND("21001", "could not find such objectKey"),<br>
+    APPKEY_NOT_FOUND("21000", "app key not found"),<br>
+    SYSTEM_ERROR("500", "system error"),<br>
+    DOWNLOAD_ERROR("1", "get object from OSS error"),<br>
+    AUTHENTICATION_ERROR("2", "authentication failed by oauth2"),<br>
+    REMOTE_HTTP_CALL_ERROR("3", "failed to call remote url {0}"),<br>
+    OSS_ERROR("4", "error while calling OSS {0}"),<br>
+    UNKNOWN_ERROR("-1", "error while using 3rd SDK")<br>
 
-## 轻量级上传下载 [/objects/{objectKey}]
+## 轻量级上传下载 [/v1/objects/{objectKey}]
 
 ### 根据objectKey下载 [GET]
 请求方需要经过account用户中心OAUTH授权<br>
-使用ResponseBody 文件流stream回传二进制文件数据
+使用ResponseBody 文件流stream回传二进制文件数据<br>
 
 + Request
     + Headers
@@ -27,24 +37,36 @@ objectKey需要用URLEncoder编码
     + Body
     
             {
-                "code": "401"
-                "message": "permission denied"
-                "data": null
+                "code": "401",
+                "message": "authentication failed by oauth2"
             }
         
 + Response 404 (application/json)
     + Body
     
             {
-                "code": "21001"
-                "message": "object not found"
+                "code": "21001",
+                "message": "could not find such objectKey",
                 "data": null
             }    
+
++ Response 500 (application/json)
+    + Body
+    
+            {
+                "code": "xxxx",
+                "message": "xxxx",
+                "data": null
+            } 
 
 ### 上传文档 [PUT]
 请求方需要经过account用户中心OAUTH授权<br>
 将文件二进制流通过httprequest提交<br>
-有则更新 无则创建
+有则更新 无则创建<br>
+uri都会被当做本次上传的key,可以包含/<br>
+比如说/objects/aaa/bbb 这个key就是aaa/bbb <br>
+比如说/objects/aaa 这个key就是aaa
+
 
 + Request
     + Headers
@@ -95,11 +117,12 @@ objectKey需要用URLEncoder编码
 
             info: objectKey=/markup/222.png&exists=true
 
-## 轻量级文档操作 - 列表 [/objects?objectKey={objectKey}&start={start}&limit={limit}]
+## 轻量级文档操作 - 列表 [/v1/objects?objectKey={objectKey}&start={start}&limit={limit}]
 
 ### 查询列表 [GET]
 获取路径下的列表<br>
-默认20个
+默认20个<br>暂时暂时未提供暂时
+
 
 + Request
     + Headers
